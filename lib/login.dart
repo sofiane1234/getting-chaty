@@ -50,14 +50,15 @@ class _LoginState extends State<Login> {
             Container(
               alignment: Alignment.centerRight,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 30),
                 child: Text('Mot de passe oublié?'),
+
               ),
+              padding: EdgeInsets.symmetric(vertical: 20),
             ),
 
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(child: Text('Signin'),
                   onPressed: () async{
@@ -67,14 +68,6 @@ class _LoginState extends State<Login> {
                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
                   });
                   }, ),
-
-                ElevatedButton(child: Text('Logout'),
-                  onPressed: () async{
-                  await FirebaseAuth.instance.signOut();
-                  setState(() {});
-                  },
-                ),
-
               ],
             )
           ],
