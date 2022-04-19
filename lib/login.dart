@@ -25,7 +25,7 @@ class _LoginState extends State<Login> {
     return Scaffold(
       appBar: AppBar(title: Text('Getting Chaty (Logged ' + (user == null ? 'out)':'in)'),
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),),
-      backgroundColor: Colors.cyanAccent,
+      backgroundColor: Colors.white,
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
