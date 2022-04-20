@@ -1,11 +1,20 @@
+import 'package:chatyap/firebaseHelper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
+
 var loginUser = FirebaseAuth.instance.currentUser;
 
 class Home extends StatefulWidget {
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  Service service = Service();
   final auth = FirebaseAuth.instance;
   getCurrentUser() {
     final user = auth.currentUser;
@@ -14,12 +23,13 @@ class Home extends StatefulWidget {
     }
   }
   @override
-  State<Home> createState() => _HomeState();
-}
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCurrentUser();
+  }
 
-class _HomeState extends State<Home> {
   final storeMsg = FirebaseFirestore.instance;
-
   TextEditingController msg = TextEditingController();
 
   @override
@@ -40,51 +50,56 @@ class _HomeState extends State<Home> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-
         children: [
-          Text("Discussions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
-          AffichMsg(),
-          Row(children: [
-            Expanded(
+          Container(
+            height: 308,
+            child: AffichMsg()
+          ),
+          Row(
+            children: [
+              Expanded(
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border(
                       top: BorderSide(
                         color: Colors.green,
-                        width: 2.5,
+                        width: 0.5,
                       ),
                     ),
                   ),
-              child: TextField(
-                controller: msg,
-                decoration: InputDecoration(
-                  hintText: "Ecrire un message...",
-                  hintStyle: TextStyle(fontWeight: FontWeight.bold),
+                    child: TextField(
+                      controller: msg,
+                      decoration: InputDecoration(
+                        hintText: "Ecrire un message...",
+                        hintStyle: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            ),
-            IconButton(onPressed: (){
-              if (msg.text.isNotEmpty) {
-                storeMsg.collection("Messages").doc().set({
-                  "messages":msg.text.trim(),
-                  "user":loginUser!.email.toString(),
-                });
-                msg.clear();
-              }
-            }, icon: Icon(Icons.send,
-              color: Colors.redAccent,),)
-          ],
-          ),
 
+                  IconButton(onPressed: (){
+                    if (msg.text.isNotEmpty) {
+                      storeMsg.collection("Messages").doc().set({
+                        "messages":msg.text.trim(),
+                        "user":loginUser!.email.toString(),
+                        "time":DateTime.now(),
+                      });
+                      msg.clear();
+                    }
+                  },
+                    icon: Icon(Icons.send,
+                      color: Colors.redAccent,),)
+
+            ],
+          ),
         ],
       ),
     );
   }
 }
+
 class AffichMsg extends StatefulWidget {
   const AffichMsg({Key? key}) : super(key: key);
-
   @override
   State<AffichMsg> createState() => _AffichMsgState();
 }
@@ -93,7 +108,7 @@ class _AffichMsgState extends State<AffichMsg> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection("Messages").snapshots(),
+      stream: FirebaseFirestore.instance.collection("Messages").orderBy("time").snapshots(),
       builder: (context, snapshot){
         if(!snapshot.hasData) {
           return Center(
@@ -101,15 +116,44 @@ class _AffichMsgState extends State<AffichMsg> {
           );
         }
         return ListView.builder(
-          itemCount: snapshot.data!.docs.length,
+            reverse: true,
+            itemCount: snapshot.data!.docs.length,
             shrinkWrap: true,
             primary: true,
+            physics: ScrollPhysics(),
             itemBuilder: (context,i){
               QueryDocumentSnapshot query = snapshot.data!.docs[i];
               return ListTile(
-                title: Text(query['messages']),
+                title: Column(
+                  crossAxisAlignment: loginUser!.email == query['user']
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: loginUser!.email == query['user']
+                            ? Colors.green.withOpacity(0.5)
+                            : Colors.cyanAccent.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(query['messages']),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Text('De : ' + query['user'],
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
-            });
+            }
+            );
         },
     );
   }
