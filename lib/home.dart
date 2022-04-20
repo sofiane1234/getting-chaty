@@ -40,8 +40,10 @@ class _HomeState extends State<Home> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
+
         children: [
           Text("Discussions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
+          AffichMsg(),
           Row(children: [
             Expanded(
                 child: Container(
@@ -60,7 +62,7 @@ class _HomeState extends State<Home> {
                   hintStyle: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-            )
+            ),
             ),
             IconButton(onPressed: (){
               if (msg.text.isNotEmpty) {
@@ -70,13 +72,45 @@ class _HomeState extends State<Home> {
                 });
                 msg.clear();
               }
-
             }, icon: Icon(Icons.send,
               color: Colors.redAccent,),)
           ],
           ),
+
         ],
       ),
+    );
+  }
+}
+class AffichMsg extends StatefulWidget {
+  const AffichMsg({Key? key}) : super(key: key);
+
+  @override
+  State<AffichMsg> createState() => _AffichMsgState();
+}
+
+class _AffichMsgState extends State<AffichMsg> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection("Messages").snapshots(),
+      builder: (context, snapshot){
+        if(!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return ListView.builder(
+          itemCount: snapshot.data!.docs.length,
+            shrinkWrap: true,
+            primary: true,
+            itemBuilder: (context,i){
+              QueryDocumentSnapshot query = snapshot.data!.docs[i];
+              return ListTile(
+                title: Text(query['messages']),
+              );
+            });
+        },
     );
   }
 }
