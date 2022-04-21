@@ -46,26 +46,27 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            height: 308,
-            child: AffichMsg()
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: Colors.green,
-                        width: 0.5,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+                height: 555,
+                child: AffichMsg()
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.green,
+                          width: 0.5,
+                        ),
                       ),
                     ),
-                  ),
                     child: TextField(
                       controller: msg,
                       decoration: InputDecoration(
@@ -76,22 +77,23 @@ class _HomeState extends State<Home> {
                   ),
                 ),
 
-                  IconButton(onPressed: (){
-                    if (msg.text.isNotEmpty) {
-                      storeMsg.collection("Messages").doc().set({
-                        "messages":msg.text.trim(),
-                        "user":loginUser!.email.toString(),
-                        "time":DateTime.now(),
-                      });
-                      msg.clear();
-                    }
-                  },
-                    icon: Icon(Icons.send,
-                      color: Colors.redAccent,),)
+                IconButton(onPressed: (){
+                  if (msg.text.isNotEmpty) {
+                    storeMsg.collection("Messages").doc().set({
+                      "messages":msg.text.trim(),
+                      "user":loginUser!.email.toString(),
+                      "time":DateTime.now(),
+                    });
+                    msg.clear();
+                  }
+                },
+                  icon: Icon(Icons.send,
+                    color: Colors.redAccent,),)
 
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
