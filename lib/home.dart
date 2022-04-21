@@ -8,7 +8,6 @@ import 'login.dart';
 var loginUser = FirebaseAuth.instance.currentUser;
 
 class Home extends StatefulWidget {
-
   @override
   State<Home> createState() => _HomeState();
 }
@@ -22,13 +21,13 @@ class _HomeState extends State<Home> {
       loginUser = user;
     }
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getCurrentUser();
   }
-
   final storeMsg = FirebaseFirestore.instance;
   TextEditingController msg = TextEditingController();
 
@@ -41,7 +40,7 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(onPressed: () async => {
             await FirebaseAuth.instance.signOut(),
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()))},
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()))},
               icon: Icon(Icons.logout,
               color: Colors.cyanAccent,)
           ),
@@ -116,7 +115,6 @@ class _AffichMsgState extends State<AffichMsg> {
           );
         }
         return ListView.builder(
-            reverse: true,
             itemCount: snapshot.data!.docs.length,
             shrinkWrap: true,
             primary: true,
